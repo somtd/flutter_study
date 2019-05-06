@@ -91,7 +91,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
           child: Text('Save'),
           color: Theme.of(context).accentColor,
           textColor: Colors.white,
-          onPressed() => _submitForm(model.addProduct, model.updateProduct),
+          onPressed: () => _submitForm(model.addProduct, model.updateProduct),
         );
       },
     );
@@ -142,6 +142,9 @@ class _ProductEditPageState extends State<ProductEditPage> {
               _buildTitleTextField(),
               _buildDescriptionTextField(),
               _buildPriceTextField(),
+              SizedBox(
+                height: 10.0,
+              ),
               _buildSubmitButton(),
             ],
           ),
