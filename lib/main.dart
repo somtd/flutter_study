@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 // import 'package:flutter/rendering.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import './pages/auth.dart';
 import './pages/products_manage.dart';
@@ -23,31 +24,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   // bool _isAuth = false;
-  List<Product> _products = [];
-
-  // void _isLogin(bool auth) {
-  //   setState(() {
-  //     _isAuth = auth;
-  //   });
-  // }
-
-  void _addProduct(Product product) {
-    setState(() {
-      _products.add(product);
-    });
-  }
-
-  void _updateProduct(Product product, int index) {
-    setState(() {
-      _products[index] = product;
-    });
-  }
-
-  void _deleteProduct(int index) {
-    setState(() {
-      _products.removeAt(index);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,9 +35,8 @@ class _MyAppState extends State<MyApp> {
       ),
       routes: {
         '/': (BuildContext context) => AuthPage(),
-        '/products': (BuildContext context) => ProductsPage(_products),
-        '/admin': (BuildContext context) => ProductsManagePage(
-            _addProduct, _updateProduct, _deleteProduct, _products),
+        '/products': (BuildContext context) => ProductsPage(),
+        '/admin': (BuildContext context) => ProductsManagePage(),
       },
       onGenerateRoute: (RouteSettings settings) {
         final List<String> pathElements = settings.name.split('/');
@@ -71,18 +46,14 @@ class _MyAppState extends State<MyApp> {
         if (pathElements[1] == 'product') {
           final int index = int.parse(pathElements[2]);
           return MaterialPageRoute<bool>(
-            builder: (BuildContext context) => ProductDetailPage(
-                  _products[index].title,
-                  _products[index].description,
-                  _products[index].price,
-                  _products[index].image,
-                ),
+            builder: (BuildContext context) =>
+                ProductDetailPage(null, null, null, null),
           );
         }
       },
       onUnknownRoute: (RouteSettings settings) {
         return MaterialPageRoute(
-          builder: (BuildContext context) => ProductsPage(_products),
+          builder: (BuildContext context) => ProductsPage(),
         );
       },
     );
