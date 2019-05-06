@@ -6,7 +6,6 @@ import './pages/auth.dart';
 import './pages/products_manage.dart';
 import './pages/products.dart';
 import './pages/product_detail.dart';
-import './models/product.dart';
 import './scoped_models/products.dart';
 
 void main() {
