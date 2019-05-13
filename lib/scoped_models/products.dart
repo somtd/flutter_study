@@ -5,9 +5,17 @@ import '../models/product.dart';
 class ProductsModel extends Model {
   List<Product> _products = [];
   int _selectedProductIndex;
+  bool _showFavorites = false;
 
   List<Product> get products {
     // 参照ではなく、コピーを返す（Newのようなもの）
+    return List.from(_products);
+  }
+
+  List<Product> get displayedProducts {
+    if (_showFavorites) {
+      return _products.where((Product product) => product.isFavorite).toList();
+    }
     return List.from(_products);
   }
 
@@ -19,6 +27,10 @@ class ProductsModel extends Model {
     return _selectedProductIndex == null
         ? null
         : _products[_selectedProductIndex];
+  }
+
+  bool get displayFavoritesOnly {
+    return _showFavorites;
   }
 
   void addProduct(Product product) {
@@ -49,12 +61,18 @@ class ProductsModel extends Model {
         image: _products[_selectedProductIndex].image,
         isFavorite: newFavoriteStatus);
     _products[_selectedProductIndex] = updatedProduct;
-    _selectedProductIndex = null;
     // 全てのScopedModelに変更を通知して、再描画させる。
     notifyListeners();
+    _selectedProductIndex = null;
   }
 
   void selectProduct(int index) {
     _selectedProductIndex = index;
+    notifyListeners();
+  }
+
+  void toggleDisplayMode() {
+    _showFavorites = !_showFavorites;
+    notifyListeners();
   }
 }
