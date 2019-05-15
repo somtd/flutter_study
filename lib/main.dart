@@ -6,7 +6,7 @@ import './pages/auth.dart';
 import './pages/products_manage.dart';
 import './pages/products.dart';
 import './pages/product_detail.dart';
-import './scoped_models/products.dart';
+import './scoped_models/main.dart';
 
 void main() {
   // debugPaintSizeEnabled = true;
@@ -24,8 +24,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return ScopedModel(
-      model: ProductsModel(),
+    return ScopedModel<MainModel>(
+      model: MainModel(),
       child: MaterialApp(
         theme: ThemeData(
           brightness: Brightness.light,
