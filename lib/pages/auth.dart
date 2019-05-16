@@ -87,12 +87,12 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
-  void _submitForm() {
+  void _submitForm(Function login) {
     if (!_formKey.currentState.validate() || !_formData['accept_terms']) {
       return;
     }
     _formKey.currentState.save();
-    print(_formData['email']);
+    login(_formData['email'], _formData['password']);
     Navigator.pushReplacementNamed(context, '/products');
   }
 
@@ -133,7 +133,7 @@ class _AuthPageState extends State<AuthPage> {
                             child: Text('Login'),
                             color: Theme.of(context).accentColor,
                             textColor: Colors.white,
-                            onPressed: () => _submitForm(),
+                            onPressed: () => _submitForm(model.login),
                           );
                         },
                       )
