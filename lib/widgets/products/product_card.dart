@@ -72,6 +72,7 @@ class ProductCard extends StatelessWidget {
             child: _buildTitlePriceRow(),
           ),
           AddressTag('Kamakura JAPAN'),
+          Text(product.userEmail),
           _buildActionButtons(context),
         ],
       ),

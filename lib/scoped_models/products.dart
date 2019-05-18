@@ -1,73 +1,64 @@
-import 'package:scoped_model/scoped_model.dart';
-
 import '../models/product.dart';
+import '../scoped_models/connected_products.dart';
 
-mixin ProductsModel on Model {
-  List<Product> _products = [];
-  int _selectedProductIndex;
+mixin ProductsModel on ConnectedProducts {
   bool _showFavorites = false;
 
-  List<Product> get products {
+  List<Product> get allProducts {
     // 参照ではなく、コピーを返す（Newのようなもの）
-    return List.from(_products);
+    return List.from(products);
   }
 
   List<Product> get displayedProducts {
     if (_showFavorites) {
-      return _products.where((Product product) => product.isFavorite).toList();
+      return products.where((Product product) => product.isFavorite).toList();
     }
-    return List.from(_products);
+    return List.from(products);
   }
 
   int get selectedProductIndex {
-    return _selectedProductIndex;
+    return selectedProductIndex;
   }
 
   Product get selectedProduct {
-    return _selectedProductIndex == null
-        ? null
-        : _products[_selectedProductIndex];
+    return selectedProductIndex == null ? null : products[selectedProductIndex];
   }
 
   bool get displayFavoritesOnly {
     return _showFavorites;
   }
 
-  void addProduct(Product product) {
-    _products.add(product);
-    _selectedProductIndex = null;
-    notifyListeners();
-  }
-
   void updateProduct(Product product) {
-    _products[_selectedProductIndex] = product;
-    _selectedProductIndex = null;
+    products[selectedProductIndex] = product;
+    selProductIndex = null;
     notifyListeners();
   }
 
   void deleteProduct() {
-    _products.removeAt(_selectedProductIndex);
-    _selectedProductIndex = null;
+    products.removeAt(selectedProductIndex);
+    selProductIndex = null;
     notifyListeners();
   }
 
   void toggleProductFavoriteStatus() {
-    final bool isProductFavorite = _products[_selectedProductIndex].isFavorite;
+    final bool isProductFavorite = selectedProduct.isFavorite;
     final bool newFavoriteStatus = !isProductFavorite;
     final Product updatedProduct = Product(
-        title: _products[_selectedProductIndex].title,
-        description: _products[_selectedProductIndex].description,
-        price: _products[_selectedProductIndex].price,
-        image: _products[_selectedProductIndex].image,
+        title: selectedProduct.title,
+        description: selectedProduct.description,
+        price: selectedProduct.price,
+        image: selectedProduct.image,
+        userEmail: selectedProduct.userEmail,
+        userId: selectedProduct.userId,
         isFavorite: newFavoriteStatus);
-    _products[_selectedProductIndex] = updatedProduct;
+    products[selectedProductIndex] = updatedProduct;
     // 全てのScopedModelに変更を通知して、再描画させる。
     notifyListeners();
-    _selectedProductIndex = null;
+    selProductIndex = null;
   }
 
   void selectProduct(int index) {
-    _selectedProductIndex = index;
+    selProductIndex = index;
     notifyListeners();
   }
 
