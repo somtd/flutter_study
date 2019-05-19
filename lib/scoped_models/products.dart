@@ -17,7 +17,7 @@ mixin ProductsModel on ConnectedProducts {
   }
 
   int get selectedProductIndex {
-    return selectedProductIndex;
+    return selProductIndex;
   }
 
   Product get selectedProduct {
@@ -28,8 +28,17 @@ mixin ProductsModel on ConnectedProducts {
     return _showFavorites;
   }
 
-  void updateProduct(Product product) {
-    products[selectedProductIndex] = product;
+  void updateProduct(
+      String title, String description, String image, double price) {
+    final updatedProduct = Product(
+      title: title,
+      description: description,
+      image: image,
+      price: price,
+      userEmail: selectedProduct.userEmail,
+      userId: selectedProduct.userId,
+    );
+    products[selectedProductIndex] = updatedProduct;
     selProductIndex = null;
     notifyListeners();
   }
