@@ -19,7 +19,6 @@ mixin ConnectedProductsModel on Model {
       userId: _authenticatedUser.id,
     );
     _products.add(newProduct);
-    _selProductIndex = null;
     notifyListeners();
   }
 }
@@ -64,13 +63,11 @@ mixin ProductsModel on ConnectedProductsModel {
       userId: selectedProduct.userId,
     );
     _products[selectedProductIndex] = updatedProduct;
-    _selProductIndex = null;
     notifyListeners();
   }
 
   void deleteProduct() {
     _products.removeAt(selectedProductIndex);
-    _selProductIndex = null;
     notifyListeners();
   }
 
@@ -88,7 +85,6 @@ mixin ProductsModel on ConnectedProductsModel {
     _products[selectedProductIndex] = updatedProduct;
     // 全てのScopedModelに変更を通知して、再描画させる。
     notifyListeners();
-    _selProductIndex = null;
   }
 
   void selectProduct(int index) {
