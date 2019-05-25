@@ -19,18 +19,22 @@ mixin ConnectedProductsModel on Model {
       'image': 'https://www.mary.co.jp/mary/images/topics/img_180402_main.jpg',
       'price': price,
     };
-    http.post('https://flutter-products-f2789.firebaseio.com/products.json',
-        body: json.encode(productData));
-    final newProduct = Product(
-      title: title,
-      description: description,
-      image: image,
-      price: price,
-      userEmail: _authenticatedUser.email,
-      userId: _authenticatedUser.id,
-    );
-    _products.add(newProduct);
-    notifyListeners();
+    http
+        .post('https://flutter-products-f2789.firebaseio.com/products.json',
+            body: json.encode(productData))
+        .then((http.Response response) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      final newProduct = Product(
+          id: responseData['name'],
+          title: title,
+          description: description,
+          image: image,
+          price: price,
+          userEmail: _authenticatedUser.email,
+          userId: _authenticatedUser.id);
+      _products.add(newProduct);
+      notifyListeners();
+    });
   }
 }
 
