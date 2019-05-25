@@ -15,10 +15,10 @@ class Products extends StatelessWidget {
             ProductCard(products[index], index),
         itemCount: products.length,
       );
-    } else {
-      productCard = Center(
-        child: Text('No Products found. Please add some!'),
-      );
+      // } else {
+      //   productCard = Center(
+      //     child: Text('No Products found. Please add some!'),
+      //   );
     }
     return productCard;
   }
