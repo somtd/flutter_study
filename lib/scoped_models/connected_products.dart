@@ -86,6 +86,14 @@ mixin ProductsModel on ConnectedProductsModel {
     notifyListeners();
   }
 
+  void fetchProduct() {
+    http
+        .get('https://flutter-products-f2789.firebaseio.com/products.json')
+        .then((http.Response response) {
+      print(json.decode(response.body));
+    });
+  }
+
   void toggleProductFavoriteStatus() {
     final bool isProductFavorite = selectedProduct.isFavorite;
     final bool newFavoriteStatus = !isProductFavorite;
