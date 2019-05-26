@@ -22,8 +22,8 @@ mixin ConnectedProductsModel on Model {
       'description': description,
       'image': 'https://www.mary.co.jp/mary/images/topics/img_180402_main.jpg',
       'price': price,
-      'userEmail': 'test@test.com',
-      'userId': 'etetetestetete',
+      'userEmail': _authenticatedUser.email,
+      'userId': _authenticatedUser.id,
     };
     return http
         .post('https://flutter-products-f2789.firebaseio.com/products.json',
@@ -74,18 +74,35 @@ mixin ProductsModel on ConnectedProductsModel {
     return _showFavorites;
   }
 
-  void updateProduct(
+  Future<Null> updateProduct(
       String title, String description, String image, double price) {
-    final updatedProduct = Product(
-      title: title,
-      description: description,
-      image: image,
-      price: price,
-      userEmail: selectedProduct.userEmail,
-      userId: selectedProduct.userId,
-    );
-    _products[selectedProductIndex] = updatedProduct;
-    notifyListeners();
+    _isLoading = true;
+    final Map<String, dynamic> updateData = {
+      'title': title,
+      'description': description,
+      'image': 'https://www.mary.co.jp/mary/images/topics/img_180402_main.jpg',
+      'price': price,
+      'userEmail': selectedProduct.userEmail,
+      'userId': selectedProduct.userId,
+    };
+    return http
+        .put(
+            'https://flutter-products-f2789.firebaseio.com/${selectedProduct.id}.json',
+            body: json.encode(updateData))
+        .then((http.Response response) {
+      _isLoading = false;
+      final updatedProduct = Product(
+        id: selectedProduct.id,
+        title: title,
+        description: description,
+        image: image,
+        price: price,
+        userEmail: selectedProduct.userEmail,
+        userId: selectedProduct.userId,
+      );
+      _products[selectedProductIndex] = updatedProduct;
+      notifyListeners();
+    });
   }
 
   void deleteProduct() {
@@ -128,6 +145,7 @@ mixin ProductsModel on ConnectedProductsModel {
     final bool isProductFavorite = selectedProduct.isFavorite;
     final bool newFavoriteStatus = !isProductFavorite;
     final Product updatedProduct = Product(
+        id: selectedProduct.id,
         title: selectedProduct.title,
         description: selectedProduct.description,
         price: selectedProduct.price,

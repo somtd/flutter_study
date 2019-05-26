@@ -17,7 +17,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
     'title': null,
     'description': null,
     'price': null,
-    'image': 'assets/food.jpg',
+    'image': 'https://www.mary.co.jp/mary/images/topics/img_180402_main.jpg',
   };
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -109,14 +109,15 @@ class _ProductEditPageState extends State<ProductEditPage> {
         _formData['image'],
         _formData['price'],
       ).then((_) => Navigator.pushReplacementNamed(context, '/products')
-          .then((_) => setSelectedProduct()));
+          .then((_) => setSelectedProduct(null)));
     } else {
       updateProduct(
         _formData['title'],
         _formData['description'],
         _formData['image'],
         _formData['price'],
-      );
+      ).then((_) => Navigator.pushReplacementNamed(context, '/products')
+          .then((_) => setSelectedProduct(null)));
     }
   }
 
