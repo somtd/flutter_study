@@ -87,7 +87,7 @@ mixin ProductsModel on ConnectedProductsModel {
     };
     return http
         .put(
-            'https://flutter-products-f2789.firebaseio.com/${selectedProduct.id}.json',
+            'https://flutter-products-f2789.firebaseio.com/products/${selectedProduct.id}.json',
             body: json.encode(updateData))
         .then((http.Response response) {
       _isLoading = false;
