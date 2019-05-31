@@ -26,7 +26,7 @@ class _ProductListPageState extends State<ProductListPage> {
     return IconButton(
         icon: Icon(Icons.edit),
         onPressed: () {
-          model.selectProduct(index);
+          model.selectProduct(model.allProducts[index].id);
           Navigator.of(context)
               .push(MaterialPageRoute(builder: (BuildContext context) {
             return ProductEditPage();
@@ -45,7 +45,7 @@ class _ProductListPageState extends State<ProductListPage> {
               background: Container(color: Colors.red),
               onDismissed: (DismissDirection direction) {
                 if (direction == DismissDirection.endToStart) {
-                  model.selectProduct(index);
+                  model.selectProduct(model.allProducts[index].id);
                   model.deleteProduct();
                 } else if (direction == DismissDirection.startToEnd) {
                   print('swipe start to end');

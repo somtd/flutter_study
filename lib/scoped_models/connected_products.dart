@@ -9,7 +9,7 @@ import '../models/user.dart';
 
 mixin ConnectedProductsModel on Model {
   List<Product> _products = [];
-  int _selProductIndex;
+  String _selProductId;
   User _authenticatedUser;
   bool _isLoading = false;
 
@@ -60,14 +60,23 @@ mixin ProductsModel on ConnectedProductsModel {
     return List.from(_products);
   }
 
+  String get selectedProductId {
+    return _selProductId;
+  }
+
   int get selectedProductIndex {
-    return _selProductIndex;
+    return _products.indexWhere((Product product) {
+      return product.id == _selProductId;
+    });
   }
 
   Product get selectedProduct {
-    return selectedProductIndex == null
-        ? null
-        : _products[selectedProductIndex];
+    if (selectedProductId == null) {
+      return null;
+    }
+    return _products.firstWhere((Product product) {
+      return product.id == _selProductId;
+    });
   }
 
   bool get displayFavoritesOnly {
@@ -100,6 +109,9 @@ mixin ProductsModel on ConnectedProductsModel {
         userEmail: selectedProduct.userEmail,
         userId: selectedProduct.userId,
       );
+      final int selectedProductIndex = _products.indexWhere((Product product) {
+        return product.id == _selProductId;
+      });
       _products[selectedProductIndex] = updatedProduct;
       notifyListeners();
     });
@@ -108,14 +120,20 @@ mixin ProductsModel on ConnectedProductsModel {
   void deleteProduct() {
     _isLoading = true;
     final deletedProductId = selectedProduct.id;
+    final int selectedProductIndex = _products.indexWhere((Product product) {
+      return product.id == _selProductId;
+    });
     _products.removeAt(selectedProductIndex);
-    _selProductIndex = null;
+    _selProductId = null;
     notifyListeners();
     http
         .delete(
-            'https://flutter-products-f2789.firebaseio.com/products/${deletedProductId}.json')
+            'https://flutter-products-f2789.firebaseio.com/products/$deletedProductId.json')
         .then((http.Response response) {
       _isLoading = false;
+      final int selectedProductIndex = _products.indexWhere((Product product) {
+        return product.id == _selProductId;
+      });
       _products.removeAt(selectedProductIndex);
       notifyListeners();
     });
@@ -166,13 +184,15 @@ mixin ProductsModel on ConnectedProductsModel {
         userEmail: selectedProduct.userEmail,
         userId: selectedProduct.userId,
         isFavorite: newFavoriteStatus);
+
     _products[selectedProductIndex] = updatedProduct;
     // 全てのScopedModelに変更を通知して、再描画させる。
     notifyListeners();
   }
 
-  void selectProduct(int index) {
-    _selProductIndex = index;
+  void selectProduct(String productId) {
+    _selProductId = productId;
+
     notifyListeners();
   }
 

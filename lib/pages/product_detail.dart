@@ -7,9 +7,6 @@ import '../models/product.dart';
 import '../scoped_models/main.dart';
 
 class ProductDetailPage extends StatelessWidget {
-  final int productIndex;
-
-  ProductDetailPage(this.productIndex);
   _showWarningDialog(BuildContext context) {
     showDialog(
         context: context,
@@ -68,7 +65,7 @@ class ProductDetailPage extends StatelessWidget {
       },
       child: ScopedModelDescendant<MainModel>(
           builder: (BuildContext context, Widget child, MainModel model) {
-        final Product product = model.allProducts[productIndex];
+        final Product product = model.selectedProduct;
         return Scaffold(
           appBar: AppBar(
             title: Text(product.title),
