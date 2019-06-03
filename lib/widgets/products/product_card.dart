@@ -32,12 +32,15 @@ class ProductCard extends StatelessWidget {
       // Main Axis Alignment
       alignment: MainAxisAlignment.center,
       children: <Widget>[
-        IconButton(
-          icon: Icon(Icons.info),
-          color: Theme.of(context).accentColor,
-          onPressed: () => Navigator.pushNamed<bool>(
-              context, '/product/' + productIndex.toString()),
-        ),
+        ScopedModelDescendant<MainModel>(
+            builder: (BuildContext context, Widget child, MainModel model) {
+          return IconButton(
+            icon: Icon(Icons.info),
+            color: Theme.of(context).accentColor,
+            onPressed: () => Navigator.pushNamed<bool>(
+                context, '/product/' + model.allProducts[productIndex].id),
+          );
+        }),
         ScopedModelDescendant<MainModel>(
           builder: (BuildContext context, Widget child, MainModel model) {
             return IconButton(

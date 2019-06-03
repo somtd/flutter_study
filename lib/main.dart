@@ -7,6 +7,7 @@ import './pages/products_manage.dart';
 import './pages/products.dart';
 import './pages/product_detail.dart';
 import './scoped_models/main.dart';
+import './models/product.dart';
 
 void main() {
   // debugPaintSizeEnabled = true;
@@ -45,9 +46,13 @@ class _MyAppState extends State<MyApp> {
           }
           if (pathElements[1] == 'product') {
             final String productId = pathElements[2];
+            final Product product =
+                model.allProducts.firstWhere((Product product) {
+              return product.id == productId;
+            });
             model.selectProduct(productId);
             return MaterialPageRoute<bool>(
-              builder: (BuildContext context) => ProductDetailPage(),
+              builder: (BuildContext context) => ProductDetailPage(product),
             );
           }
         },
