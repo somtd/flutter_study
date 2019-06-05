@@ -26,7 +26,7 @@ mixin ConnectedProductsModel on Model {
       'userId': _authenticatedUser.id,
     };
     return http
-        .post('https://flutter-products-f2789.firebaseio.com/products.jsn',
+        .post('https://flutter-products-f2789.firebaseio.com/products.json',
             body: json.encode(productData))
         .then((http.Response response) {
       if (response.statusCode != 200 && response.statusCode != 201) {
