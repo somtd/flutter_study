@@ -31,6 +31,7 @@ mixin ConnectedProductsModel on Model {
         .then((http.Response response) {
       if (response.statusCode != 200 && response.statusCode != 201) {
         _isLoading = false;
+        notifyListeners();
         return false;
       }
       final Map<String, dynamic> responseData = json.decode(response.body);
@@ -46,6 +47,10 @@ mixin ConnectedProductsModel on Model {
       _isLoading = false;
       notifyListeners();
       return true;
+    }).catchError((error) {
+      _isLoading = false;
+      notifyListeners();
+      return false;
     });
   }
 }
@@ -88,7 +93,7 @@ mixin ProductsModel on ConnectedProductsModel {
     return _showFavorites;
   }
 
-  Future<Null> updateProduct(
+  Future<bool> updateProduct(
       String title, String description, String image, double price) {
     _isLoading = true;
     final Map<String, dynamic> updateData = {
@@ -119,10 +124,15 @@ mixin ProductsModel on ConnectedProductsModel {
       });
       _products[selectedProductIndex] = updatedProduct;
       notifyListeners();
+      return true;
+    }).catchError((error) {
+      _isLoading = false;
+      notifyListeners();
+      return false;
     });
   }
 
-  void deleteProduct() {
+  Future<bool> deleteProduct() {
     _isLoading = true;
     final deletedProductId = selectedProduct.id;
     final int selectedProductIndex = _products.indexWhere((Product product) {
@@ -131,7 +141,7 @@ mixin ProductsModel on ConnectedProductsModel {
     _products.removeAt(selectedProductIndex);
     _selProductId = null;
     notifyListeners();
-    http
+    return http
         .delete(
             'https://flutter-products-f2789.firebaseio.com/products/$deletedProductId.json')
         .then((http.Response response) {
@@ -141,15 +151,20 @@ mixin ProductsModel on ConnectedProductsModel {
       });
       _products.removeAt(selectedProductIndex);
       notifyListeners();
+      return true;
+    }).catchError((error) {
+      _isLoading = false;
+      notifyListeners();
+      return false;
     });
   }
 
-  Future fetchProduct() {
+  Future<Null> fetchProduct() {
     _isLoading = true;
     notifyListeners();
     return http
         .get('https://flutter-products-f2789.firebaseio.com/products.json')
-        .then((http.Response response) {
+        .then<Null>((http.Response response) {
       _isLoading = true;
       notifyListeners();
       final List<Product> fetchedProductList = [];
@@ -175,6 +190,9 @@ mixin ProductsModel on ConnectedProductsModel {
       _isLoading = false;
       notifyListeners();
       _selProductId = null;
+    }).catchError((error) {
+      _isLoading = false;
+      notifyListeners();
     });
   }
 
