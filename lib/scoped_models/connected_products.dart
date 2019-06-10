@@ -231,6 +231,19 @@ mixin UserModel on ConnectedProductsModel {
     _authenticatedUser =
         User(id: 'retsgyetee', email: email, password: password);
   }
+
+  Future<Map<String, dynamic>> signup(String email, String password) async {
+    final Map<String, dynamic> authData = {
+      'email': email,
+      'password': password,
+      'returnSecureToken': true,
+    };
+    final http.Response response = await http.post(
+      'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyCustomToken?key=AIzaSyAV-Vf3pK9igR9uThXLYAZEOLyKLykqICg',
+      body: json.encode(authData),
+    );
+    print(response);
+  }
 }
 
 mixin UtilityModel on ConnectedProductsModel {
