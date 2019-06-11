@@ -239,10 +239,11 @@ mixin UserModel on ConnectedProductsModel {
       'returnSecureToken': true,
     };
     final http.Response response = await http.post(
-      'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyCustomToken?key=AIzaSyAV-Vf3pK9igR9uThXLYAZEOLyKLykqICg',
-      body: json.encode(authData),
-    );
-    print(response);
+        'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyAV-Vf3pK9igR9uThXLYAZEOLyKLykqICg',
+        body: json.encode(authData),
+        headers: {'Content-Type': 'application/json'});
+    print(json.decode(response.body));
+    return {'success': true, 'message': 'Authentication Succeeded!'};
   }
 }
 
