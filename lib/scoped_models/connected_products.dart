@@ -239,11 +239,21 @@ mixin UserModel on ConnectedProductsModel {
       'returnSecureToken': true,
     };
     final http.Response response = await http.post(
-        'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyAV-Vf3pK9igR9uThXLYAZEOLyKLykqICg',
-        body: json.encode(authData),
-        headers: {'Content-Type': 'application/json'});
+      'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyAV-Vf3pK9igR9uThXLYAZEOLyKLykqICg',
+      body: json.encode(authData),
+      headers: {'Content-Type': 'application/json'},
+    );
+    final Map<String, dynamic> responseData = json.decode(response.body);
+    bool hasError = true;
+    String message = 'Something went wrong';
+    if (responseData.containsKey('idToken')) {
+      hasError = false;
+      message = 'Authentication Succeeded!';
+    } else if (responseData['error']['message'] == 'EMAIL_EXISTS') {
+      message = 'This email already exist';
+    }
     print(json.decode(response.body));
-    return {'success': true, 'message': 'Authentication Succeeded!'};
+    return {'success': !hasError, 'message': message};
   }
 }
 
