@@ -121,29 +121,32 @@ class _AuthPageState extends State<AuthPage> {
       return;
     }
     _formKey.currentState.save();
+    Map<String, dynamic> successInformation;
     if (_authMode == AuthMode.Login) {
-      login(_formData['email'], _formData['password']);
+      successInformation =
+          await login(_formData['email'], _formData['password']);
     } else {
-      final Map<String, dynamic> successInformation =
+      successInformation =
           await signup(_formData['email'], _formData['password']);
-      if (successInformation['success'] == true) {
-        Navigator.pushReplacementNamed(context, '/products');
-      } else {
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('An Error Occurred!'),
-                content: Text(successInformation['message']),
-                actions: <Widget>[
-                  FlatButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: Text('OK'),
-                  )
-                ],
-              );
-            });
-      }
+    }
+    if (successInformation['success'] == true) {
+      Navigator.pushReplacementNamed(context, '/products');
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('An Error Occurred!'),
+            content: Text(successInformation['message']),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('OK'),
+              )
+            ],
+          );
+        },
+      );
     }
   }
 
@@ -179,9 +182,7 @@ class _AuthPageState extends State<AuthPage> {
                       _authMode == AuthMode.Signup
                           ? _buildPasswordConfirmTextField()
                           : Container(),
-                      _authMode == AuthMode.Signup
-                          ? _buildAcceptSwitch()
-                          : Container(),
+                      _buildAcceptSwitch(),
                       SizedBox(
                         height: 10.0,
                       ),
