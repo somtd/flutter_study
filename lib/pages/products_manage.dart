@@ -22,7 +22,7 @@ class ProductsManagePage extends StatelessWidget {
               leading: Icon(Icons.shop),
               title: Text('Products'),
               onTap: () => {
-                    Navigator.pushReplacementNamed(context, '/products'),
+                    Navigator.pushReplacementNamed(context, '/'),
                   }),
           Divider(),
           LogoutListTile(),

@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:rxdart/subjects.dart';
 
 import '../models/product.dart';
 import '../models/user.dart';
@@ -230,9 +231,14 @@ mixin ProductsModel on ConnectedProductsModel {
 
 mixin UserModel on ConnectedProductsModel {
   Timer _authTimer;
+  PublishSubject<bool> _userSubject = PublishSubject();
 
   User get user {
     return _authenticatedUser;
+  }
+
+  PublishSubject<bool> get userSubject {
+    return _userSubject;
   }
 
   Future<Map<String, dynamic>> authenticate(String email, String password,
@@ -270,6 +276,8 @@ mixin UserModel on ConnectedProductsModel {
           email: email,
           token: responseData['idToken']);
       setAuthTimeout(int.parse(responseData['expiresIn']));
+      // true: authしたことを伝える。
+      _userSubject.add(true);
       // Tokenの有効期限を文字列で保存するため…
       final DateTime now = DateTime.now();
       final DateTime expiryTime =
@@ -308,21 +316,30 @@ mixin UserModel on ConnectedProductsModel {
       final int tokenLifespan = parsedExpiryTime.difference(now).inSeconds;
       _authenticatedUser = User(id: userId, email: userEmail, token: token);
       setAuthTimeout(tokenLifespan);
+      // true: authしたことを伝える。
+      _userSubject.add(true);
       notifyListeners();
     }
   }
 
   void logout() async {
+    print('Logout');
     _authenticatedUser = null;
     _authTimer.toString();
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('token');
     prefs.remove('userEmail');
     prefs.remove('userId');
+    // ※手動でLogoutするときは、画面遷移をするので、_userSubjectを介さない！
   }
 
   void setAuthTimeout(int time) {
-    _authTimer = Timer(Duration(seconds: time), logout);
+    // 有効期限が切れたら自動的にLogoutするタイミングで_userSubjectから発火。
+    _authTimer = Timer(Duration(milliseconds: time * 2), () {
+      logout();
+      // false:ログアウトしたことを伝える。
+      _userSubject.add(false);
+    });
   }
 }
 
