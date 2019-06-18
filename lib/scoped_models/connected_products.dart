@@ -326,6 +326,8 @@ mixin UserModel on ConnectedProductsModel {
     print('Logout');
     _authenticatedUser = null;
     _authTimer.toString();
+    // false:ログアウトしたことを伝える。
+    _userSubject.add(false);
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('token');
     prefs.remove('userEmail');
@@ -335,11 +337,8 @@ mixin UserModel on ConnectedProductsModel {
 
   void setAuthTimeout(int time) {
     // 有効期限が切れたら自動的にLogoutするタイミングで_userSubjectから発火。
-    _authTimer = Timer(Duration(milliseconds: time * 2), () {
-      logout();
-      // false:ログアウトしたことを伝える。
-      _userSubject.add(false);
-    });
+    // TODO:意図的に短くなっているセッション保持期間を直す
+    _authTimer = Timer(Duration(milliseconds: time * 2), logout);
   }
 }
 
