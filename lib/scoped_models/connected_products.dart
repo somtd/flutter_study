@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:async';
+import 'dart:io';
 
 import 'package:scoped_model/scoped_model.dart';
 import 'package:http/http.dart' as http;
@@ -200,7 +201,7 @@ mixin ProductsModel on ConnectedProductsModel {
     });
   }
 
-  void toggleProductFavoriteStatus() {
+  void toggleProductFavoriteStatus() async {
     final bool isProductFavorite = selectedProduct.isFavorite;
     final bool newFavoriteStatus = !isProductFavorite;
     final Product updatedProduct = Product(
@@ -212,10 +213,32 @@ mixin ProductsModel on ConnectedProductsModel {
         userEmail: selectedProduct.userEmail,
         userId: selectedProduct.userId,
         isFavorite: newFavoriteStatus);
-
     _products[selectedProductIndex] = updatedProduct;
     // 全てのScopedModelに変更を通知して、再描画させる。
     notifyListeners();
+    http.Response response;
+    if (newFavoriteStatus) {
+      response = await http.put(
+          'https://flutter-products-f2789.firebaseio.com/products/${selectedProduct.id}/wishlistUsers/${_authenticatedUser.id}.json?auth=${_authenticatedUser.token}',
+          body: json.encode(true));
+    } else {
+      response = await http.delete(
+          'https://flutter-products-f2789.firebaseio.com/products/${selectedProduct.id}/wishlistUsers/${_authenticatedUser.id}.json?auth=${_authenticatedUser.token}');
+    }
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      final Product updatedProduct = Product(
+          id: selectedProduct.id,
+          title: selectedProduct.title,
+          description: selectedProduct.description,
+          price: selectedProduct.price,
+          image: selectedProduct.image,
+          userEmail: selectedProduct.userEmail,
+          userId: selectedProduct.userId,
+          isFavorite: !newFavoriteStatus);
+      _products[selectedProductIndex] = updatedProduct;
+      // 全てのScopedModelに変更を通知して、再描画させる。
+      notifyListeners();
+    }
   }
 
   void selectProduct(String productId) {
@@ -338,7 +361,7 @@ mixin UserModel on ConnectedProductsModel {
   void setAuthTimeout(int time) {
     // 有効期限が切れたら自動的にLogoutするタイミングで_userSubjectから発火。
     // TODO:意図的に短くなっているセッション保持期間を直す
-    _authTimer = Timer(Duration(milliseconds: time * 2), logout);
+    _authTimer = Timer(Duration(seconds: time), logout);
   }
 }
 
