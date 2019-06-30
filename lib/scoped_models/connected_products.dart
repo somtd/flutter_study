@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:async';
-import 'dart:io';
 
 import 'package:scoped_model/scoped_model.dart';
 import 'package:http/http.dart' as http;
@@ -163,7 +162,7 @@ mixin ProductsModel on ConnectedProductsModel {
     });
   }
 
-  Future<Null> fetchProduct() {
+  Future<Null> fetchProduct({onlyForUser: false}) {
     _isLoading = true;
     notifyListeners();
     return http
@@ -195,7 +194,12 @@ mixin ProductsModel on ConnectedProductsModel {
         );
         fetchedProductList.add(product);
       });
-      _products = fetchedProductList;
+      _products = onlyForUser
+          ? fetchedProductList.where((Product product) {
+              return product.userId == _authenticatedUser.id;
+            }).toList()
+          : fetchedProductList;
+      // _products = fetchedProductList;
       _isLoading = false;
       notifyListeners();
       _selProductId = null;
