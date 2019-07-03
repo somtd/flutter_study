@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:scoped_model/scoped_model.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:map_view/map_view.dart';
 
 import './pages/auth.dart';
 import './pages/products_manage.dart';
@@ -9,9 +11,11 @@ import './pages/product_detail.dart';
 import './scoped_models/main.dart';
 import './models/product.dart';
 
-void main() {
+Future main() async {
   // debugPaintSizeEnabled = true;
   // debugPaintBaselinesEnabled = false;
+  await DotEnv().load('.env');
+  MapView.setApiKey(DotEnv().env['GOOGLE_MAP_API_KEY']);
   runApp(MyApp());
 }
 
