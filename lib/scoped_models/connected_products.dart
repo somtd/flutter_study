@@ -284,7 +284,6 @@ mixin UserModel on ConnectedProductsModel {
     };
     http.Response response;
     String apiKey = DotEnv().env['FIREBASE_API_KEY'];
-    print('API KEY:' + apiKey);
     if (mode == AuthMode.Login) {
       response = await http.post(
         'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=' +
