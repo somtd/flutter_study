@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:scoped_model/scoped_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rxdart/subjects.dart';
 
@@ -282,15 +283,19 @@ mixin UserModel on ConnectedProductsModel {
       'returnSecureToken': true,
     };
     http.Response response;
+    String apiKey = DotEnv().env['FIREBASE_API_KEY'];
+    print('API KEY:' + apiKey);
     if (mode == AuthMode.Login) {
       response = await http.post(
-        'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyAV-Vf3pK9igR9uThXLYAZEOLyKLykqICg',
+        'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=' +
+            apiKey,
         body: json.encode(authData),
         headers: {'Content-Type': 'application/json'},
       );
     } else {
       response = await http.post(
-        'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyAV-Vf3pK9igR9uThXLYAZEOLyKLykqICg',
+        'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=' +
+            apiKey,
         body: json.encode(authData),
         headers: {'Content-Type': 'application/json'},
       );
