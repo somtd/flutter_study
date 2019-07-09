@@ -5,6 +5,7 @@ import 'package:scoped_model/scoped_model.dart';
 import '../models/product.dart';
 import '../scoped_models/main.dart';
 import '../widgets/form_input/location.dart';
+import '../models/location_data.dart';
 
 class ProductEditPage extends StatefulWidget {
   @override
@@ -19,6 +20,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
     'description': null,
     'price': null,
     'image': 'https://www.mary.co.jp/mary/images/topics/img_180402_main.jpg',
+    'location': null,
   };
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -95,6 +97,10 @@ class _ProductEditPageState extends State<ProductEditPage> {
     );
   }
 
+  void _setLocation(LocationData locationData) {
+    _formData['location'] = locationData;
+  }
+
   // selectedProductIndexは、nullである可能性がある。※optionalの引数は[]で囲む。
   void _submitForm(
       Function addProduct, Function updateProduct, Function setSelectedProduct,
@@ -109,6 +115,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
         _formData['description'],
         _formData['image'],
         _formData['price'],
+        _formData['location'],
       ).then((bool success) {
         if (success) {
           Navigator.pushReplacementNamed(context, '/products')
@@ -163,7 +170,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
               SizedBox(
                 height: 10.0,
               ),
-              LocationInput(),
+              LocationInput(_setLocation),
               SizedBox(
                 height: 10.0,
               ),
