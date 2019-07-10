@@ -31,7 +31,7 @@ class _LocationInputState extends State<LocationInput> {
   void initState() {
     _addressInputFocusNode.addListener(_updateLocation);
     if (widget.product != null) {
-      getStaticMap(widget.product.location.address);
+      getStaticMap(widget.product.location.address, false);
     }
     super.initState();
   }
@@ -42,7 +42,7 @@ class _LocationInputState extends State<LocationInput> {
     super.dispose();
   }
 
-  void getStaticMap(String address) async {
+  void getStaticMap(String address, [geocode = true]) async {
     if (address.isEmpty) {
       setState(() {
         _staticMapUri = null;
@@ -51,7 +51,7 @@ class _LocationInputState extends State<LocationInput> {
       return;
     }
     // productがなかった場合、新規で地図を取りに行く（新規作成時）
-    if (widget.product == null) {
+    if (geocode) {
       final Uri uri = Uri.https('maps.googleapis.com', '/maps/api/geocode/json',
           {'address': address, 'key': DotEnv().env['GOOGLE_MAP_API_KEY']});
       final http.Response response = await http.get(uri);
@@ -116,9 +116,7 @@ class _LocationInputState extends State<LocationInput> {
       //TODO:アドレス入っていないときの対応もう少しマシにする。
       _staticMapUri != null
           ? Image.network(_staticMapUri.toString())
-          : SizedBox(
-              height: 10.0,
-            ),
+          : Container(),
     ]);
   }
 }
