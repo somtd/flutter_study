@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:async';
 
-import 'package:flutter/widgets.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -84,13 +83,15 @@ mixin ProductsModel on ConnectedProductsModel {
       }
       final Map<String, dynamic> responseData = json.decode(response.body);
       final newProduct = Product(
-          id: responseData['name'],
-          title: title,
-          description: description,
-          image: image,
-          price: price,
-          userEmail: _authenticatedUser.email,
-          userId: _authenticatedUser.id);
+        id: responseData['name'],
+        title: title,
+        description: description,
+        image: image,
+        price: price,
+        location: locationData,
+        userEmail: _authenticatedUser.email,
+        userId: _authenticatedUser.id,
+      );
       _products.add(newProduct);
       _isLoading = false;
       notifyListeners();
@@ -191,6 +192,11 @@ mixin ProductsModel on ConnectedProductsModel {
           description: productData['description'],
           image: productData['image'],
           price: productData['price'],
+          location: LocationData(
+            address: productData['location_address'],
+            latitude: productData['location_lat'],
+            longitude: productData['location_lng'],
+          ),
           userEmail: productData['userEmail'],
           userId: productData['userId'],
           isFavorite: productData['wishlistUsers'] == null
@@ -257,7 +263,9 @@ mixin ProductsModel on ConnectedProductsModel {
 
   void selectProduct(String productId) {
     _selProductId = productId;
-    notifyListeners();
+    if (productId != null) {
+      notifyListeners();
+    }
   }
 
   void toggleDisplayMode() {

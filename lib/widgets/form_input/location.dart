@@ -7,12 +7,14 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import '../../models/location_data.dart';
+import '../../models/product.dart';
 
 class LocationInput extends StatefulWidget {
   // EditPageから呼ばれる
   final Function setLocation;
+  final Product product;
 
-  LocationInput(this.setLocation);
+  LocationInput(this.setLocation, this.product);
   @override
   State<StatefulWidget> createState() {
     return _LocationInputState();
@@ -28,7 +30,9 @@ class _LocationInputState extends State<LocationInput> {
   @override
   void initState() {
     _addressInputFocusNode.addListener(_updateLocation);
-    //getStaticMap();
+    if (widget.product != null) {
+      getStaticMap(widget.product.location.address);
+    }
     super.initState();
   }
 
@@ -46,18 +50,24 @@ class _LocationInputState extends State<LocationInput> {
       widget.setLocation(null);
       return;
     }
-    final Uri uri = Uri.https('maps.googleapis.com', '/maps/api/geocode/json',
-        {'address': address, 'key': DotEnv().env['GOOGLE_MAP_API_KEY']});
-    final http.Response response = await http.get(uri);
-    final decodedResponse = json.decode(response.body);
-    final formattedAddress = decodedResponse['results'][0]['formatted_address'];
-    final coords = decodedResponse['results'][0]['geometry']['location'];
-    _locationData = LocationData(
-      address: formattedAddress,
-      latitude: coords['lat'],
-      longitude: coords['lng'],
-    );
-
+    // productがなかった場合、新規で地図を取りに行く（新規作成時）
+    if (widget.product == null) {
+      final Uri uri = Uri.https('maps.googleapis.com', '/maps/api/geocode/json',
+          {'address': address, 'key': DotEnv().env['GOOGLE_MAP_API_KEY']});
+      final http.Response response = await http.get(uri);
+      final decodedResponse = json.decode(response.body);
+      final formattedAddress =
+          decodedResponse['results'][0]['formatted_address'];
+      final coords = decodedResponse['results'][0]['geometry']['location'];
+      _locationData = LocationData(
+        address: formattedAddress,
+        latitude: coords['lat'],
+        longitude: coords['lng'],
+      );
+      // productがあった場合（つまり既存productの編集）
+    } else {
+      _locationData = widget.product.location;
+    }
     // Geocoding APIとMaps Static APIを有効にする必要あり
     final StaticMapProvider staticMapViewProvider =
         StaticMapProvider(DotEnv().env['GOOGLE_MAP_API_KEY']);
@@ -103,7 +113,12 @@ class _LocationInputState extends State<LocationInput> {
       SizedBox(
         height: 10.0,
       ),
-      Image.network(_staticMapUri.toString()),
+      //TODO:アドレス入っていないときの対応もう少しマシにする。
+      _staticMapUri != null
+          ? Image.network(_staticMapUri.toString())
+          : SizedBox(
+              height: 10.0,
+            ),
     ]);
   }
 }
