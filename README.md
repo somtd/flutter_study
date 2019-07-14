@@ -17,3 +17,6 @@ samples, guidance on mobile development, and a full API reference.
 
 # flutter_study
 令和なのでFlutterをやっていき
+
+内容がレガシーになってきたので新しいアプリでやりなおす。(2019/07/13)
+https://github.com/somtd/flutter_shop
